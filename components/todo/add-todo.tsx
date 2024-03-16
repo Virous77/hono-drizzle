@@ -1,21 +1,30 @@
 "use client";
 
 import { toast } from "sonner";
-import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { addNewTodo } from "./action";
-import { useFormStatus } from "react-dom";
+import { useRef } from "react";
+import ButtonComp from "./button-comp";
+import { addNewTodoApi } from "@/api/api";
+import { invalidatePath } from "./revalidate";
 
 const AddTodo = () => {
-  const { pending } = useFormStatus();
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const handleAddTodo = async (formData: FormData) => {
     try {
-      const res = await addNewTodo(formData);
-      console.log(res);
+      // server action
+      // await addNewTodo(formData);
+
+      // rest api
+      await addNewTodoApi(formData);
+      invalidatePath("/");
+      inputRef!.current!.value = "";
     } catch (error: any) {
       toast.error(error.message || "An error occurred");
     }
   };
+
   return (
     <form className=" mt-4 flex items-center gap-2" action={handleAddTodo}>
       <Input
@@ -23,8 +32,10 @@ const AddTodo = () => {
         className=" w-full p-2 border rounded"
         name="todo"
         placeholder="Add a new todo"
+        ref={inputRef}
       />
-      <Button>{pending ? "Adding..." : "Add Todo"}</Button>
+
+      <ButtonComp name="Add Todo" />
     </form>
   );
 };
