@@ -7,6 +7,8 @@ import { useRef } from "react";
 import ButtonComp from "./button-comp";
 import { addNewTodoApi } from "@/api/api";
 import { invalidatePath } from "./revalidate";
+import { TTodoHonoPost } from "@/app/api/[[...route]]/route";
+import { honoClient } from "./hono-client";
 
 const AddTodo = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -17,7 +19,12 @@ const AddTodo = () => {
       // await addNewTodo(formData);
 
       // rest api
-      await addNewTodoApi(formData);
+      // await addNewTodoApi(formData);
+
+      // hono direct
+      honoClient<TTodoHonoPost>().api.todo.$post({
+        form: { todo: formData.get("todo") as File },
+      });
       invalidatePath("/");
       inputRef!.current!.value = "";
     } catch (error: any) {
@@ -29,7 +36,7 @@ const AddTodo = () => {
     <form className=" mt-4 flex items-center gap-2" action={handleAddTodo}>
       <Input
         type="text"
-        className=" w-full p-2 border rounded"
+        className=" w-full rounded border p-2"
         name="todo"
         placeholder="Add a new todo"
         ref={inputRef}

@@ -11,12 +11,12 @@ export const runtime = "edge";
 
 const app = new Hono().basePath("/api");
 
-app.get("/todo", async (c) => {
+const getRoute = app.get("/todo", async (c) => {
   try {
     const data = await db.select().from(todo).orderBy(desc(todo.created_at));
-    return c.json({ data });
+    return c.json({ data, message: "Todos fetched successfully" });
   } catch (error) {
-    return c.json({ message: "An error occurred" }, 400);
+    return c.json({ message: "An error occurred", data: null }, 400);
   }
 });
 
@@ -24,7 +24,7 @@ const todoSchema = z.object({
   todo: z.string().min(1, { message: "Todo text is required" }),
 });
 
-app.post(
+const postRoute = app.post(
   "/todo",
   zValidator("form", todoSchema, (result, c) => {
     if (!result.success) {
@@ -42,10 +42,10 @@ app.post(
     } catch (error) {
       return c.json({ message: "An error occurred" }, 400);
     }
-  }
+  },
 );
 
-app.put(
+const putRoute = app.put(
   "/todo/:id",
   zValidator("form", todoSchema, (result, c) => {
     if (!result.success) {
@@ -61,10 +61,10 @@ app.put(
     } catch (error) {
       return c.json({ message: "An error occurred" }, 400);
     }
-  }
+  },
 );
 
-app.delete("/todo/:id", async (c) => {
+const deleteRoute = app.delete("/todo/:id", async (c) => {
   try {
     const id = c.req.param("id");
     await db.delete(todo).where(eq(todo.id, id));
@@ -78,3 +78,8 @@ export const GET = handle(app);
 export const POST = handle(app);
 export const PUT = handle(app);
 export const DELETE = handle(app);
+
+export type TTodoHonoGet = typeof getRoute;
+export type TTodoHonoPost = typeof postRoute;
+export type TTodoHonoPut = typeof putRoute;
+export type TTodoHonoDelete = typeof deleteRoute;

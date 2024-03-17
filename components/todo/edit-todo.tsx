@@ -13,6 +13,8 @@ import { updateTodo } from "./action";
 import ButtonComp from "./button-comp";
 import { editTodo } from "@/api/api";
 import { invalidatePath } from "./revalidate";
+import { TTodoHonoPut } from "@/app/api/[[...route]]/route";
+import { honoClient } from "./hono-client";
 
 const EditTodo = ({ text, id }: { text: string; id: string }) => {
   const [formData, setFormData] = useState({
@@ -27,16 +29,23 @@ const EditTodo = ({ text, id }: { text: string; id: string }) => {
       setFormData({ ...formData, isLoading: true });
 
       // server action
-      //   await updateTodo({
-      //     formData: e,
-      //     id,
-      //   });
+      // await updateTodo({
+      //   formData: e,
+      //   id,
+      // });
 
       // rest api
-      await editTodo({
-        formData: e,
-        id,
+      // await editTodo({
+      //   formData: e,
+      //   id,
+      // });
+
+      // hono direct
+      await honoClient<TTodoHonoPut>().api.todo[":id"].$put({
+        param: { id },
+        form: { todo: e.get("todo") as File },
       });
+
       invalidatePath("/");
       setOpen(false);
       setFormData({ ...formData, isLoading: false });

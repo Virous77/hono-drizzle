@@ -5,8 +5,8 @@ import { ErrorBoundary } from "react-error-boundary";
 
 const Todo = () => {
   return (
-    <main className=" flex items-center justify-center w-screen mt-4">
-      <section className=" w-full md:w-[500px] h-fit bg-accent border rounded p-2">
+    <main className=" mt-4 flex w-screen items-center justify-center">
+      <section className=" bg-accent h-fit w-full rounded border p-2 md:w-[500px]">
         <h1 className=" text-2xl font-bold">Drizzle Todo</h1>
         <AddTodo />
 

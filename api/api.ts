@@ -13,11 +13,11 @@ const commonError = (error: unknown) => {
   throw new Error("An error occurred");
 };
 
-export const getTodos = async () => {
+export const getTodos = async <T>() => {
   try {
     const res = await fetch("http://localhost:3000/api/todo");
     const data = await res.json();
-    return data.data;
+    return data.data as T;
   } catch (error) {
     throw new Error("An error occurred");
   }
